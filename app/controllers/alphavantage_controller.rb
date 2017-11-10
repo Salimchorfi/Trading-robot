@@ -7,7 +7,7 @@ class AlphavantageController < ApplicationController
   def stock_price(symbol)
     url = "query?function=TIME_SERIES_INTRADAY&symbol=#{symbol}&interval=1min&outputsize=compact&apikey=#{ENV["API_KEY"]}"
     response = HTTParty.get("#{@@base_uri}/#{url}")
-    return response["Time Series (1min)"].first
+    return response["Time Series (1min)"].values[0]["4. close"].to_f
   end
 
   def sma(symbol)
