@@ -52,6 +52,23 @@ class AlphavantageController < ApplicationController
     return response["Technical Analysis: AROON"].first
   end
 
+  def bbands(symbol)
+    url = "query?function=BBANDS&symbol=#{symbol}&interval=weekly&time_period=5&series_type=close&nbdevup=3&nbdevdn=3&apikey=#{ENV["API_KEY"]}"
+    response = HTTParty.get("#{@@base_uri}/#{url}")
+    return response["Technical Analysis: BBANDS"].first
+  end
+
+  def ad(symbol)
+    url = "query?function=AD&symbol=#{symbol}&interval=daily&apikey=#{ENV["API_KEY"]}"
+    response = HTTParty.get("#{@@base_uri}/#{url}")
+    return response["Technical Analysis: AD"].first
+  end
+
+  def obv(symbol)
+    url = "query?function=OBV&symbol=#{symbol}&interval=weekly&apikey=#{ENV["API_KEY"]}"
+    response = HTTParty.get("#{@@base_uri}/#{url}")
+    return response["Technical Analysis: OBV"].first
+  end
 
 
 end
