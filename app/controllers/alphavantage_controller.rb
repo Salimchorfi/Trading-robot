@@ -34,6 +34,24 @@ class AlphavantageController < ApplicationController
     return response["Technical Analysis: RSI"].first
   end
 
+  def adx(symbol)
+    url = "query?function=ADX&symbol=#{symbol}&interval=15min&time_period=10&apikey=#{ENV["API_KEY"]}"
+    response = HTTParty.get("#{@@base_uri}/#{url}")
+    return response["Technical Analysis: ADX"].first
+  end
+
+  def cci(symbol)
+    url = "query?function=CCI&symbol=#{symbol}&interval=daily&time_period=10&apikey=#{ENV["API_KEY"]}"
+    response = HTTParty.get("#{@@base_uri}/#{url}")
+    return response["Technical Analysis: CCI"].first
+  end
+
+  def aroon(symbol)
+    url = "query?function=AROON&symbol=#{symbol}&interval=daily&time_period=14&apikey=#{ENV["API_KEY"]}"
+    response = HTTParty.get("#{@@base_uri}/#{url}")
+    return response["Technical Analysis: AROON"].first
+  end
+
 
 
 end
