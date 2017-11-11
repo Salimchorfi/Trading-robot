@@ -7,14 +7,29 @@ namespace :db do
     # time = Time.now
 
     # until time.hour == 14 and time.min == 0
-      stock_price = AlphavantageController.new.stock_price("FB")
+      symbol = "MSFT"
+      quantity = 100
+      stock_price = AlphavantageController.new.stock_price(symbol)
       # p time.hour
       # p time.min
-      # p stock_price
+      p stock_price
 
-      test = Trade.new(symbol: "FB", price: stock_price, action: "BUY", quantity: 10)
+      trade = Trade.new(symbol: symbol, price: stock_price, action: "BUY", quantity: quantity)
+      trade.save
 
-      test.save
+      if Titre.where(symbol: symbol).exists? and trade.action == "BUY"
+        titre = Titre.where(symbol: symbol)
+        titre[0].increment!(:quantity, quantity)
+        p "Titre updated (buy)"
+      elsif Titre.where(symbol: symbol).exists? and trade.action == "SELL"
+        titre = Titre.where(symbol: symbol)
+        titre[0].decrement!(:quantity, quantity)
+        p "Titre updated (sell)"
+      else
+        Titre.new(symbol: symbol, quantity: quantity).save
+        p "Titre created"
+      end
+
 
       # time = Time.now
 
