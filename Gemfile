@@ -29,6 +29,8 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 #Figaro gem
 gem 'figaro'
+#Bitfinex
+gem 'bitfinex-rb'
 #Http Party
 gem 'httparty'
 # Use Redis adapter to run Action Cable in production
