@@ -3,7 +3,9 @@
 one:
   slope: 1.5
   rsquared: 1.5
+  index: 1
 
 two:
   slope: 1.5
   rsquared: 1.5
+  index: 1

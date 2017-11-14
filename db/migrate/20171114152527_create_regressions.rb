@@ -3,6 +3,7 @@ class CreateRegressions < ActiveRecord::Migration[5.0]
     create_table :regressions do |t|
       t.float :slope
       t.float :rsquared
+      t.integer :index
 
       t.timestamps
     end

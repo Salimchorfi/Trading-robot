@@ -25,7 +25,10 @@ namespace :db do
       # p btc
 
       if @sub_ten % 80 == 0
-        p BitfinexController.new.line_fit
+        slope = BitfinexController.new.line_fit[0]
+        rsquared = BitfinexController.new.line_fit[1]
+        Regression.new(slope: slope, rsquared = rsquared)
+        p "slope = #{slope}, rsquared = #{rsquared}"
       end
 
       time = Time.now
