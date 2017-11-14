@@ -33,6 +33,10 @@ gem 'figaro'
 gem 'bitfinex-rb'
 #Http Party
 gem 'httparty'
+#Plot
+gem 'ascii_charts'
+# linefit
+gem 'linefit'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password

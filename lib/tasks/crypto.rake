@@ -14,6 +14,7 @@ namespace :db do
 
 
       p "#{@sub_ten} - #{btc = BitfinexController.new.stock_price("btcusd")}"
+
       if Btc.count > 0
         Btc.new(price: btc, index: Btc.last.index + 1).save
       else
@@ -23,13 +24,13 @@ namespace :db do
       # trade = Trade.new(symbol: "BTC", price: btc, action: "BUY", quantity: 1)
       # p btc
 
-      if @sub_ten % 10 == 0
-        p BitfinexController.new.btc_slope(@sub_ten)
+      if @sub_ten % 80 == 0
+        p BitfinexController.new.line_fit
       end
 
       time = Time.now
       @sub_ten += 1
-      sleep 30
+      sleep 15
 
     end
 
