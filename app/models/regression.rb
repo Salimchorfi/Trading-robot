@@ -1,0 +1,2 @@
+class Regression < ApplicationRecord
+end
