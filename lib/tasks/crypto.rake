@@ -24,10 +24,10 @@ namespace :db do
       # trade = Trade.new(symbol: "BTC", price: btc, action: "BUY", quantity: 1)
       # p btc
 
-      if @sub_ten % 80 == 0
-        slope = BitfinexController.new.line_fit[0]
-        rsquared = BitfinexController.new.line_fit[1]
-        Regression.new(slope: slope, rsquared = rsquared)
+      if @sub_ten % 40 == 0
+        slope = BitfinexController.new.line_fit_40[0]
+        rsquared = BitfinexController.new.line_fit_40[1]
+        Regression.new(slope: slope, rsquared: rsquared, index: Btc.last.index).save
         p "slope = #{slope}, rsquared = #{rsquared}"
       end
 

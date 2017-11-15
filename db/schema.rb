@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171113002809) do
+ActiveRecord::Schema.define(version: 20171114152527) do
 
   create_table "btcs", force: :cascade do |t|
     t.float    "price"
@@ -21,6 +21,14 @@ ActiveRecord::Schema.define(version: 20171113002809) do
 
   create_table "questrades", force: :cascade do |t|
     t.string   "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "regressions", force: :cascade do |t|
+    t.float    "slope"
+    t.float    "rsquared"
+    t.integer  "index"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

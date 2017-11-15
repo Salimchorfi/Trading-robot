@@ -52,7 +52,49 @@ class BitfinexController < ApplicationController
     puts AsciiCharts::Cartesian.new([[x1, y1], [x2, y2]]).draw
   end
 
-  def line_fit
+  def line_fit_20
+    x,y = Array.new(2) { [] }
+
+    Btc.last(20).each do |btc|
+      x << btc.index
+      y << btc.price
+    end
+
+    lineFit = LineFit.new
+    lineFit.setData(x,y)
+
+    return [lineFit.coefficients[1], lineFit.rSquared]
+  end
+
+  def line_fit_40
+    x,y = Array.new(2) { [] }
+
+    Btc.last(40).each do |btc|
+      x << btc.index
+      y << btc.price
+    end
+
+    lineFit = LineFit.new
+    lineFit.setData(x,y)
+
+    return [lineFit.coefficients[1], lineFit.rSquared]
+  end
+
+  def line_fit_60
+    x,y = Array.new(2) { [] }
+
+    Btc.last(60).each do |btc|
+      x << btc.index
+      y << btc.price
+    end
+
+    lineFit = LineFit.new
+    lineFit.setData(x,y)
+
+    return [lineFit.coefficients[1], lineFit.rSquared]
+  end
+
+  def line_fit_80
     x,y = Array.new(2) { [] }
 
     Btc.last(80).each do |btc|
@@ -62,12 +104,6 @@ class BitfinexController < ApplicationController
 
     lineFit = LineFit.new
     lineFit.setData(x,y)
-
-    # p slope = lineFit.coefficients[1]
-    # p lineFit.rSquared
-    # p lineFit.meanSqError
-    # p lineFit.durbinWatson
-    # p lineFit.sigma
 
     return [lineFit.coefficients[1], lineFit.rSquared]
   end
