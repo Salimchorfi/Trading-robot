@@ -13,7 +13,7 @@ namespace :db do
     until time.hour == 24 and time.min == 50
 
 
-      p "#{@sub_ten} - #{btc = BitfinexController.new.stock_price("btcusd")}"
+      p "#{@sub_ten} - #{btc = BitfinexController.new.stock_price("ethusd")}"
 
       if Btc.count > 0
         Btc.new(price: btc, index: Btc.last.index + 1).save
