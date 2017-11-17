@@ -108,4 +108,18 @@ class BitfinexController < ApplicationController
     return [lineFit.coefficients[1], lineFit.rSquared]
   end
 
+  def dynamic_regression(last_x)
+    x,y = Array.new(2) { [] }
+
+    Btc.last(last_x).each do |btc|
+      x << btc.index
+      y << btc.price
+    end
+
+    lineFit = LineFit.new
+    lineFit.setData(x,y)
+
+    return [lineFit.coefficients[1], lineFit.rSquared]
+  end
+
 end
