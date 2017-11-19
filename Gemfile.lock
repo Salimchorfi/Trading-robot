@@ -57,6 +57,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
+    colorize (0.8.1)
     concurrent-ruby (1.0.5)
     crass (1.0.2)
     erubis (2.7.0)
@@ -189,6 +190,7 @@ DEPENDENCIES
   bitfinex-rb
   byebug
   coffee-rails (~> 4.2)
+  colorize
   figaro
   httparty
   jbuilder (~> 2.5)

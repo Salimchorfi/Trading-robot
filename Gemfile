@@ -37,6 +37,8 @@ gem 'httparty'
 gem 'ascii_charts'
 # linefit
 gem 'linefit'
+#Colorize
+gem 'colorize'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
