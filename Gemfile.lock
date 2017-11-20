@@ -195,6 +195,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   colorize
   facebook-messenger
+  faraday
   figaro
   httparty
   jbuilder (~> 2.5)
