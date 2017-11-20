@@ -39,6 +39,8 @@ gem 'ascii_charts'
 gem 'linefit'
 #Colorize
 gem 'colorize'
+#Facebook messenger
+gem 'facebook-messenger'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
