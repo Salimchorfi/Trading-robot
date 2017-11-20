@@ -1,0 +1,2 @@
+class BtcModel < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class Cad < ApplicationRecord
+end

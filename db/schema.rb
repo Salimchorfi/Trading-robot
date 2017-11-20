@@ -10,13 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171116010727) do
+ActiveRecord::Schema.define(version: 20171119231716) do
+
+  create_table "btc_balances", force: :cascade do |t|
+    t.float    "balance"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "btcs", force: :cascade do |t|
     t.float    "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "index"
+  end
+
+  create_table "cads", force: :cascade do |t|
+    t.integer  "balance"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "eths", force: :cascade do |t|

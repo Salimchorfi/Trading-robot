@@ -1,0 +1,2 @@
+class BtcBalance < ApplicationRecord
+end

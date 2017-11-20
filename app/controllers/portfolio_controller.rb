@@ -1,23 +1,11 @@
 class PortfolioController < ApplicationController
 
   def portfolio(portfolio = {})
-    titres = Titre.all
-    titres.each { |titre| portfolio[titre.symbol] = titre.quantity }
-    return portfolio
-  end
+    cad = Cad.find(1).balance
+    btc = BtcBalance.find(1).balance
+    btc_price = BitfinexController.new.stock_price("btcusd")
 
-  def btc_portfolio(portfolio = {})
-    volume = 0
-    Trade.all do |trade|
-      if trade.action = "BUY"
-        volume += trade.quantity
-      elsif trade.action = "SELL"
-        volume -= trade.quantity
-      end
-      return volume
-    end
-
-
+    return cad + (btc * btc_price)
   end
 
 
