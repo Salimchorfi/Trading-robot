@@ -6,14 +6,16 @@ Facebook::Messenger::Subscriptions.subscribe(access_token: ENV["ACCESS_TOKEN"])
 # message.sent_at     # => 2016-04-22 21:30:36 +0200
 # message.text        # => 'Hello, bot!'
 
-Bot.on :message do |message|
-  command = message.text.downcase.split(" ")
+def trading_notification
+  Bot.on :message do |message|
+    command = message.text.downcase.split(" ")
 
-    Bot.deliver({
-      recipient: message.sender,
-      message: {
-        text: "Sorry, I'm not program to do this"
-      }
-    }, access_token: ENV["ACCESS_TOKEN"])
+      Bot.deliver({
+        recipient: message.sender,
+        message: {
+          text: "Sorry, I'm not program to do this"
+        }
+      }, access_token: ENV["ACCESS_TOKEN"])
+end
 
 end

@@ -24,7 +24,7 @@ namespace :db do
       balanceC = @cad_balance.balance
 
       #Generate coins price ---------------------------------------------------
-      puts "#{@sub_ten} - #{btc = BitfinexController.new.stock_price("btcusd")} - regression = #{@regression_counter}"
+      puts "#{@sub_ten} - #{btc = BitfinexController.new.stock_price("btcusd")}"
       # p "#{@sub_ten} - #{eth = BitfinexController.new.stock_price("ethusd")}"
 
       #Create Bitcoin -----------------------------------------
@@ -38,7 +38,7 @@ namespace :db do
             rsquared = BitfinexController.new.dynamic_regression(10)[1]
             #short_rsquared = BitfinexController.new.dynamic_regression(5)[1]
 
-            if rsquared > 0.825
+            if rsquared > 0.85
               @regression_counter += 1
 
               if slope > 0
@@ -50,7 +50,7 @@ namespace :db do
             elsif @regression_counter > 1
               @regression_counter = 1
 
-              if slope < - 0.5 and @cad_balance.balance > 0
+              if slope < - 0.3 and @cad_balance.balance > 0
                 puts "Baught #{(@cad_balance.balance / btc)} btc at #{btc}".cyan
                 puts "Portfolio value: #{PortfolioController.new.portfolio}".light_yellow
                 puts "Cad: #{@cad_balance.balance},  Btc: #{@btc_balance.balance}"
@@ -60,7 +60,7 @@ namespace :db do
                 @btc_balance.update_attribute(:balance, (balanceB + (balanceC / btc)))
                 @cad_balance.update_attribute(:balance, (balanceC - (btc * (balanceC / btc))))
 
-              elsif slope > 0.5 and @btc_balance.balance > 0 and Trade.count == 0
+              elsif slope > 0.3 and @btc_balance.balance > 0 and Trade.count == 0
                 puts "Sold #{@btc_balance.balance} btc at #{btc}".cyan
                 puts "Portfolio value: #{PortfolioController.new.portfolio}".light_yellow
                 puts "Cad: #{@cad_balance.balance},  Btc: #{@btc_balance.balance}"
@@ -70,7 +70,7 @@ namespace :db do
                 @btc_balance.update_attribute(:balance, (balanceB - balanceB))
                 @cad_balance.update_attribute(:balance, (balanceC + (btc * balanceB)))
 
-              elsif slope > 0.5 and @btc_balance.balance > 0 and btc > Trade.where(action: "BUY").last.price
+              elsif slope > 0.3 and @btc_balance.balance > 0 and btc > Trade.where(action: "BUY").last.price
                 puts "Sold #{@btc_balance.balance} btc at #{btc}".cyan
                 puts "Portfolio value: #{PortfolioController.new.portfolio}".light_yellow
                 puts "Cad: #{@cad_balance.balance},  Btc: #{@btc_balance.balance}"
