@@ -1,0 +1,2 @@
+class EthBalance < ApplicationRecord
+end
