@@ -121,7 +121,7 @@ namespace :db do
       #Create Etherum -----------------------------------------
       if Eth.count > 0
         if eth > 1
-          Eth.new(price: btc, index: Eth.last.index + 1).save
+          Eth.new(price: eth, index: Eth.last.index + 1).save
 
           #Dynamic regression ----------------------------------------------------------
           if Eth.count > 30
