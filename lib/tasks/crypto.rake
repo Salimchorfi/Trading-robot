@@ -31,8 +31,8 @@ namespace :db do
         @last_btc = Trade.where(symbol: "BTC", action: "BUY").last.price
         @last_eth = Trade.where(symbol: "ETH", action: "BUY").last.price
       else
-        @last_btc = nil
-        @last_eth = nil
+        @last_btc = 0
+        @last_eth = 0
       end
 
       #Generate coins price ---------------------------------------------------
@@ -66,9 +66,9 @@ namespace :db do
               @regression_counter_btc += 1
 
               if slope > 0
-                puts "index = #{@regression_counter_btc} slope = #{slope}, rsquared = #{rsquared}".black.on_light_green
+                puts "index: #{@regression_counter_btc} slope: #{slope}, rsquared: #{rsquared}, price: #{btc}, currency: BTC".black.on_light_green
               else
-                puts "index = #{@regression_counter_btc} slope = #{slope}, rsquared = #{rsquared}".black.on_light_red
+                puts "index: #{@regression_counter_btc} slope: #{slope}, rsquared: #{rsquared}, price: #{btc}, currency: BTC".black.on_light_red
               end
 
             elsif @regression_counter_btc > 1
@@ -133,9 +133,9 @@ namespace :db do
               @regression_counter_eth += 1
 
               if eth_slope > 0
-                puts "index = #{@regression_counter_eth} slope = #{eth_slope}, rsquared = #{eth_rsquared}".black.on_light_green
+                puts "index: #{@regression_counter_eth} slope: #{eth_slope}, rsquared: #{eth_rsquared}, price: #{eth}, currency: ETH".black.on_light_green
               else
-                puts "index = #{@regression_counter_eth} slope = #{eth_slope}, rsquared = #{eth_rsquared}".black.on_light_red
+                puts "index: #{@regression_counter_eth} slope: #{eth_slope}, rsquared: #{eth_rsquared}, price: #{eth}, currency: ETH".black.on_light_red
               end
 
             elsif @regression_counter_eth > 1
@@ -161,7 +161,7 @@ namespace :db do
                 @eth_balance.update_attribute(:balance, (balanceE - balanceE))
                 @cad_balance.update_attribute(:balance, (balanceC + (eth * balanceE)))
 
-              elsif eth_slope > 0.3 and @eth_balance.balance > 0 and eth > @last_eth.price and @last_eth.action == "BUY"
+              elsif eth_slope > 0.3 and @eth_balance.balance > 0 and eth > @last_eth
                 puts "Sold #{@eth_balance.balance} eth at #{eth}".cyan.bold
                 puts "Portfolio value: #{PortfolioController.new.portfolio}$".light_yellow.bold
                 puts "Eth: #{PortfolioController.new.eth_volume}".light_yellow.bold

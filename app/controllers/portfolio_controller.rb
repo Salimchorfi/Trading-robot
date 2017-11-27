@@ -3,9 +3,11 @@ class PortfolioController < ApplicationController
   def portfolio
     cad = Cad.find(1).balance
     btc = BtcBalance.find(1).balance
+    eth = EthBalance.find(1).balance
     btc_price = BitfinexController.new.stock_price("btcusd")
+    eth_price = BitfinexController.new.stock_price("ethusd")
 
-    return cad + (btc * btc_price)
+    return cad + (btc * btc_price) + (eth + eth_price)
   end
 
   def btc_volume
