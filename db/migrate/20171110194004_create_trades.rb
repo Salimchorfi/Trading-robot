@@ -4,7 +4,7 @@ class CreateTrades < ActiveRecord::Migration[5.0]
       t.string :symbol
       t.float :price
       t.string :action
-      t.integer :quantity
+      t.float :quantity
 
       t.timestamps
     end

@@ -16,6 +16,19 @@ def trading_notification
           text: "Sorry, I'm not program to do this"
         }
       }, access_token: ENV["ACCESS_TOKEN"])
+  end
 end
+
+def sending_trade(information)
+  action = information[0]
+  Bot.deliver({
+  recipient: {
+    id: '45123'
+  },
+  message: {
+    text: "#{action} #{volume} #{currency} at #{price}"
+  },
+  message_type: Facebook::Messenger::Bot::MessageType::UPDATE
+  }, access_token: ENV["ACCESS_TOKEN"])
 
 end

@@ -2,6 +2,7 @@ class BitfinexController < ApplicationController
   require "httparty"
   require "ascii_charts"
   require "linefit"
+  require "bitfinex-rb"
 
   Bitfinex::Client.configure do |conf|
 
@@ -10,7 +11,7 @@ class BitfinexController < ApplicationController
 
   end
 
-  #client = Bitfinex::Client.new
+  @@client = Bitfinex::Client.new
 
   @@base_uri = 'https://api.bitfinex.com/v1'
 
@@ -19,6 +20,25 @@ class BitfinexController < ApplicationController
     url = "pubticker/#{symbol}"
     response = HTTParty.get("#{@@base_uri}/#{url}")
     return response["last_price"].to_f
+  end
+
+  def history
+    Trade.destroy_all
+    @@client.mytrades("btcusd").each do |trade|
+      Trade.new(symbol: "BTC", price: trade["price"].to_f, action: trade["type"], quantity: trade["amount"].to_f).save
+    end
+  end
+
+  def balance_usd
+    return @@client.balances[1]["amount"].to_f
+  end
+
+  def balance_btc
+    return @@client.balances[0]["amount"].to_f
+  end
+
+  def order(symbol, volume, action)
+    return @@client.new_order(symbol, volume, "exchange market", action, 1)
   end
 
   def price_volume(symbol)

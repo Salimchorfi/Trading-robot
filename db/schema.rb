@@ -69,7 +69,7 @@ ActiveRecord::Schema.define(version: 20171125233252) do
     t.string   "symbol"
     t.float    "price"
     t.string   "action"
-    t.integer  "quantity"
+    t.float    "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

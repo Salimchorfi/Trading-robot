@@ -2,13 +2,13 @@ namespace :db do
 
   desc "Plot line"
 
-  task :plot => :environment do
+  task :btcPlot => :environment do
 
     require 'csv'
 
     csv = []
 
-    filepath    = File.join(Rails.root, 'db', 'plot.csv')
+    filepath    = File.join(Rails.root, 'db', 'btc_plot.csv')
     csv_options = { col_sep: ',', force_quotes: true, quote_char: '"' }
 
     x,y = Array.new(2) { [] }
