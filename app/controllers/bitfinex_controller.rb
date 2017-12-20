@@ -27,6 +27,11 @@ class BitfinexController < ApplicationController
     @@client.mytrades("btcusd").each do |trade|
       Trade.new(symbol: "BTC", price: trade["price"].to_f, action: trade["type"], quantity: trade["amount"].to_f).save
     end
+
+    # @@client.mytrades("bchusd").each do |trade|
+    #   Trade.new(symbol: "BCH", price: trade["price"].to_f, action: trade["type"], quantity: trade["amount"].to_f).save
+    # end
+
   end
 
   def balance_usd
@@ -34,6 +39,10 @@ class BitfinexController < ApplicationController
   end
 
   def balance_btc
+    return @@client.balances[0]["amount"].to_f
+  end
+
+  def balance_bch
     return @@client.balances[0]["amount"].to_f
   end
 
@@ -142,6 +151,20 @@ class BitfinexController < ApplicationController
     return [lineFit.coefficients[1], lineFit.rSquared]
   end
 
+  def bch_dynamic_regression(last_x)
+    x,y = Array.new(2) { [] }
+
+    Bch.last(last_x).each do |btc|
+      x << btc.index
+      y << btc.price
+    end
+
+    lineFit = LineFit.new
+    lineFit.setData(x,y)
+
+    return [lineFit.coefficients[1], lineFit.rSquared]
+  end
+
   def eth_dynamic_regression(last_x)
     x,y = Array.new(2) { [] }
 
@@ -154,6 +177,52 @@ class BitfinexController < ApplicationController
     lineFit.setData(x,y)
 
     return [lineFit.coefficients[1], lineFit.rSquared]
+  end
+
+  def negative_slope_confirmation(last_x, symbol)
+    if symbol == "btc"
+      first = Btc.last(last_x).first.price
+      last = Btc.last.price
+
+      if last > first
+        return false
+      else
+        return true
+      end
+    elsif symbol == "bch"
+      first = Bch.last(last_x).first.price
+      last = Bch.last.price
+
+      if last > first
+        return false
+      else
+        return true
+      end
+    end
+
+  end
+
+  def positive_slope_confirmation(last_x, symbol)
+    if symbol == "btc"
+      first = Btc.last(last_x).first.price
+      last = Btc.last.price
+
+      if last < first
+        return false
+      else
+        return true
+      end
+    elsif symbol == "bch"
+      first = Bch.last(last_x).first.price
+      last = Bch.last.price
+
+      if last < first
+        return false
+      else
+        return true
+      end
+    end
+
   end
 
 end
