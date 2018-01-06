@@ -6,30 +6,39 @@ namespace :db do
 
     require 'colorize'
 
-    time = Time.now
-    BitfinexController.new.history
-
     @balanceB = BitfinexController.new.balance_btc
     @balanceC = BitfinexController.new.balance_usd
-    BtcBalance.new(balance: @balanceB).save
-    Cad.new(balance: @balanceC).save
 
     @buy_commission = (0.1020 / 100)
     @sell_commission = (0.200 / 100)
     @sub_ten = 1
     @regression_counter_btc = 1
     @initial_btc_balance = @balanceB
+    @last_slope = 0
+    stop = "no"
 
-    until time.hour == 24 and time.min == 50
+
+    puts "Btc balance: #{@balanceB} Usd balance: #{@balanceC}"
+
+    until stop == "yes"
 
       #Validating last buy for price -----------------------
       if Trade.where(symbol: "BTC", action: "buy").count > 0
-        @last_btc = Trade.where(symbol: "BTC", action: "buy").last.price
+        @last_buy = Trade.where(symbol: "BTC", action: "buy").last.price
+        @last_sell = Trade.where(symbol: "BTC", action: "sell").last.price
         @last_vol = Trade.where(symbol: "BTC", action: "buy").last.quantity
       else
         @last_btc = 0
         @last_vol = 0
+        @last_sell = 50000
       end
+
+      #@last_trade = [Trade.first.action, Trade.first.price] if Trade.count > 0
+
+      if Trade.count > 0
+        p @last_trade = [Trade.first.action, Trade.first.price]
+      end
+
 
       #Generate coins price ---------
       #BTC
@@ -45,84 +54,97 @@ namespace :db do
           Btc.new(price: btc, index: Btc.last.index + 1).save
 
           #Dynamic regression ------------------------------------------
-          if Btc.count > 20
-            slope = BitfinexController.new.btc_dynamic_regression(20)[0]
-            rsquared = BitfinexController.new.btc_dynamic_regression(20)[1]
-            short_slope = BitfinexController.new.btc_dynamic_regression(4)[0]
+          if Btc.count > 35
+            slopeBuy = BitfinexController.new.btc_dynamic_regression(20)[0]
+            rsquaredBuy = BitfinexController.new.btc_dynamic_regression(20)[1]
+            slopeSell = BitfinexController.new.btc_dynamic_regression(35)[0]
+            rsquaredSell = BitfinexController.new.btc_dynamic_regression(35)[1]
 
-            if rsquared > 0.8
+            puts "slopeBuy: #{slopeBuy} rsquaredBuy: #{rsquaredBuy}"
+            puts "slopeSell: #{slopeSell} rsquaredSell: #{rsquaredSell}"
+            btc = BitfinexController.new.stock_price("btcusd")
+
+            if rsquaredBuy > 0.8 and slopeBuy < 0 || (slopeBuy < - 5 and slope < @last_slope_buy)
               @regression_counter_btc += 1
+              puts "slopeBuy: #{slopeBuy}, rsquaredBuy: #{rsquaredBuy}, price: #{btc}, currency: BTC".black.on_light_red
 
-              if slope > 0
-                puts "index: #{@regression_counter_btc} slope: #{slope}, rsquared: #{rsquared}, price: #{btc}, currency: BTC".black.on_light_green
-              else
-                puts "index: #{@regression_counter_btc} slope: #{slope}, rsquared: #{rsquared}, price: #{btc}, currency: BTC".black.on_light_red
-              end
+            elsif rsquaredSell > 0.8 and slopeSell > 0 || (slopeSell > 5 and slope > @last_slope_sell)
+              @regression_counter_btc += 1
+              puts "slopeSell: #{slopeSell}, rsquaredSell: #{rsquaredSell}, price: #{btc}, currency: BTC".black.on_light_green
+
 
             elsif @regression_counter_btc > 1
+
               @regression_counter_btc = 1
-              #Trade BUY ------------------------------------------------
-              if slope < - 0.3 and @balanceC > 600
+              #Trade BUY -------------------------------------------------------------------------------------------
+              if slopeBuy < - 0.3 and @balanceC > (0.08 * btc) and Trade.count == 0
 
                 if BitfinexController.new.negative_slope_confirmation(20, "btc")
 
-                  @balanceB = BitfinexController.new.balance_btc
-                  @balanceC = BitfinexController.new.balance_usd
-                  BtcBalance.find(1).update_attribute(:balance, @balanceB)
-                  Cad.find(1).update_attribute(:balance, @balanceC)
+                  BitfinexController.new.order("btcusd", 0.08, "buy")
 
-                  BitfinexController.new.order("btcusd", 0.04, "buy")
-                  BitfinexController.new.history
+                  sleep 5
+
                   @balanceB = BitfinexController.new.balance_btc
                   @balanceC = BitfinexController.new.balance_usd
+                  BitfinexController.new.history
 
                   puts "Baught #{((@balanceC - 20) / btc)} btc at #{btc}".cyan.bold
-                  puts "Btc volume: #{@balanceB}".light_yellow.bold
-                  if (@balanceB - @initial_btc_balance) > 0
-                    puts "Day balance: #{@balanceB - @initial_btc_balance}".light_green.bold
-                  else
-                    puts "Day balance: #{@balanceB - @initial_btc_balance}".light_red.bold
-                  end
+                  puts "Btc balance: #{@balanceB} Usd balance: #{@balanceC}".light_yellow
+
+                end
+
+              #Trade BUY --------------------------------------------------------------------------------------------------
+              elsif slopeBuy < - 0.3 and @balanceC > (0.08 * btc) and @last_trade[0] == "sell" and btc < @last_trade[1]
+
+                if BitfinexController.new.negative_slope_confirmation(20, "btc")
+
+                  BitfinexController.new.order("btcusd", 0.08, "buy")
+
+                  sleep 5
+
+                  @balanceB = BitfinexController.new.balance_btc
+                  @balanceC = BitfinexController.new.balance_usd
+                  BitfinexController.new.history
+
+                  puts "Baught #{((@balanceC - 20) / btc)} btc at #{btc}".cyan.bold
+                  puts "Btc balance: #{@balanceB} Usd balance: #{@balanceC}".light_yellow
 
                 end
 
               #SELL ---------------------------------------------------------------
-              elsif slope > 0.3 and @balanceB > 0.05 and Trade.last.action != "buy"
+              elsif slopeSell > 0.3 and @balanceB > 0.09 and Trade.count == 0
 
-                if BitfinexController.new.positive_slope_confirmation(20, "btc") == true
+                if BitfinexController.new.positive_slope_confirmation(20, "btc")
 
-                  @balanceB = BitfinexController.new.balance_btc
+                  BitfinexController.new.order("btcusd", 0.08, "sell")
+
+                  sleep 5
+
                   @balanceC = BitfinexController.new.balance_usd
-                  BtcBalance.find(1).update_attribute(:balance, @balanceB)
-                  Cad.find(1).update_attribute(:balance, @balanceC)
-
-                  BitfinexController.new.order("btcusd", 0.04, "sell")
+                  @balanceB = BitfinexController.new.balance_btc
                   BitfinexController.new.history
-                  @balanceC = BitfinexController.new.balance_usd
-                  @balanceB = BitfinexController.new.balance_btc
 
                   puts "Sold #{@balanceB} btc at #{btc}".cyan.bold
-                  puts "USD volume: #{@balanceC}".light_yellow.bold
+                  puts "Btc balance: #{@balanceB} Usd balance: #{@balanceC}".light_yellow
 
                 end
 
               #SELL ----------------------------------------------------
-              elsif slope > 0.3 and @balanceB > 0.05 and btc > @last_btc
+              elsif slopeSell > 0.3 and @balanceB > 0.09 and @last_trade[0] == "buy" and btc > @last_trade[1]
 
                 if BitfinexController.new.positive_slope_confirmation(20, "btc")
 
-                  @balanceB = BitfinexController.new.balance_btc
-                  @balanceC = BitfinexController.new.balance_usd
-                  BtcBalance.find(1).update_attribute(:balance, @balanceB)
-                  Cad.find(1).update_attribute(:balance, @balanceC)
+                  BitfinexController.new.order("btcusd", 0.08, "sell")
 
-                  BitfinexController.new.order("btcusd", 0.04, "sell")
-                  BitfinexController.new.history
+                  sleep 5
+
                   @balanceC = BitfinexController.new.balance_usd
                   @balanceB = BitfinexController.new.balance_btc
+                  BitfinexController.new.history
 
                   puts "Sold #{@balanceB} btc at #{btc}".cyan.bold
-                  puts "USD volume: #{@balanceC}".light_yellow.bold
+                  puts "Btc balance: #{@balanceB} Usd balance: #{@balanceC}"
 
                 end
 
@@ -140,11 +162,12 @@ namespace :db do
         end
       end
 
-      # Increment variables
-      time = Time.now
+      # Increment/update variables
       @sub_ten += 1
+      @last_slope_buy = slopeBuy
+      @last_slope_sell = slopeSell
       sleep 10
-      last_slope = slope
+
 
     end
 
